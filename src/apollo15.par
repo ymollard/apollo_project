@@ -1,0 +1,45 @@
+<FILE>
+ <CONFIG>
+
+  <PARAM id="calibration" type="bool" mandatory="no" default="no">
+   <DESCRIPTION>
+    If true the output will contain only the calibration data, if no only the normal data 
+   </DESCRIPTION>
+   <CASE>
+    <ITEM value="no">
+    </ITEM>
+    <ITEM value="yes">
+    </ITEM>
+   </CASE>
+  </PARAM>
+  
+  <PARAM id="sumcontrol" type="bool" mandatory="no" default="yes">
+   <DESCRIPTION>
+    If true the converter will check if the sum of all x-ray counts match the given sum in the binary file.
+    If it fails, the validity flag will be set to a negative value whose absolue value is the difference between the computed sum and the expected sum.
+   </DESCRIPTION>
+   <CASE>
+    <ITEM value="no">
+    </ITEM>
+    <ITEM value="yes">
+    </ITEM>
+   </CASE>
+  </PARAM>
+
+  <PARAM id="observation" type="int" mandatory="no" default="0">
+   <DESCRIPTION>
+    1 for output Centaurus, 2 for Midgalactic latitude, 3 for Scorpius, 4 for Cygnus, 5 for the North galactic pole, 6 for the South galactic pole, 7 for the galactic plane anticenter, 8 for the end-of-journey X-ray new sources, and 0 for output all in the same file
+   </DESCRIPTION>
+   <CONSTRAINTS>
+    observation in [0:8]
+   </CONSTRAINTS>
+  </PARAM>
+  
+  <PARAM id="inputfile" type="string" mandatory="no" default="DR005893.F02">
+   <DESCRIPTION>
+    Input file name (DR005893.F02 is DR005893.F01 with block size removed)
+   </DESCRIPTION>
+  </PARAM>
+
+ </CONFIG>
+</FILE>
