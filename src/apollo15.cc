@@ -18,7 +18,7 @@
 #include <param/src/param.h>
 #include <utils/src/STime.h>
 #include "DalRegister.h"
-#include "Celestial.h"
+//#include "Celestial.h"
 
 /* other includes */
 #include "apollo15.hpp"
@@ -763,7 +763,7 @@ int main(int argc, char **argv) {
     string input = stringParameter("inputfile"); /* input filename */
 
     ifstream f(input.c_str(), ios::in | ios::binary); // Input should be the file DR005893.F01 without Record sizes (use remove_blocks.cc to preprocess DR005893.F01)
-    if(!f.is_open())  { perror("unable to open file"); exit(EXIT_FAILURE); }
+    if(!f.is_open())  { printf("%s", input.c_str()); exit(EXIT_FAILURE); }
 
 
     for(i = 0;i < 8;i++){

@@ -35,9 +35,9 @@
    </CONSTRAINTS>
   </PARAM>
   
-  <PARAM id="inputfile" type="string" mandatory="no" default="DR005893.F02">
+  <PARAM id="inputfile" type="string" mandatory="no" default="DR005893.F01.trim">
    <DESCRIPTION>
-    Input file name (DR005893.F02 is DR005893.F01 with block size removed)
+    Input file name (DR005893.F01.trim is DR005893.F01 with block size removed)
    </DESCRIPTION>
   </PARAM>
 

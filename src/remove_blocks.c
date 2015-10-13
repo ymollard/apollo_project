@@ -18,10 +18,10 @@ int main(int argc, char **argv) {
     if(argc<2)  { perror("File name expected"); exit(-1); }
 
     FILE* f = fopen(argv[1], "r");
-    if(!f)  { perror("unable to open file"); exit(-1); }
+    if(!f)  { perror("Unable to open file"); exit(-1); }
 
-    FILE* f2 = fopen("without_header", "w");
-    if(!f2)  { perror("unable to create new file"); exit(-1); }
+    FILE* f2 = fopen(argv[2], "w");
+    if(!f2)  { perror("Unable to create new file"); exit(-1); }
 
 
     while(!feof(f)) {
@@ -43,6 +43,6 @@ int main(int argc, char **argv) {
         prevblocksize = blocksize;
     }
     fclose(f); fclose(f2);
-    printf("Preprocessing ended. Output file DR005893.F02 created.\n");
+    printf("Preprocessing ended. Output file %s created.\n", realpath(argv[2], NULL));
     return EXIT_SUCCESS;
     }
