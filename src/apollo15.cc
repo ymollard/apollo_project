@@ -671,7 +671,7 @@ void read_binary(ifstream &f, bool calib, bool sumcontrol, unsigned int observat
 				break;
 			}
             if(!(trvalue > 800000 && trvalue < 1500000)) {
-                cout << dec << "spectra " << i+1 << " at get " << trvalue << " invalid" << endl;
+                cout << fixed << dec << "spectra " << i+1 << " at get " << trvalue << " invalid" << endl;
             }
             else if(trvalue > cut_start(observation) && trvalue < cut_stop(observation) &&
             		(calib && ((ntohl(xray[11])==96l || ntohl(xray[11])==224l || nextcalib)) ||
@@ -763,7 +763,7 @@ int main(int argc, char **argv) {
     string input = stringParameter("inputfile"); /* input filename */
 
     ifstream f(input.c_str(), ios::in | ios::binary); // Input should be the file DR005893.F01 without Record sizes (use remove_blocks.cc to preprocess DR005893.F01)
-    if(!f.is_open())  { printf("%s", input.c_str()); exit(EXIT_FAILURE); }
+    if(!f.is_open())  { perror("unable to open file"); exit(EXIT_FAILURE); }
 
 
     for(i = 0;i < 8;i++){
