@@ -34,23 +34,27 @@ using namespace std;
 #define CHECK_END() if(feof(f)) { cout << "File ended" << endl; f.close(); dataSetServer->close(set); exit(EXIT_SUCCESS); }
 #define ASSERT(x) if(!(x)) { cout << "At 0x" << hex << f.tellg() << dec << " assert failed: " << STR_VALUE(x) << endl; f.close(); exit(EXIT_SUCCESS); } // Allows to close all files properly when a new spectra is not complete (eof)
 
-unsigned long int read_int(ifstream &f) {
+unsigned long int read_int(ifstream &f, bool debug=false) {
     // Read a LSB-first int of 6 Bytes and return the corresponding encoding for the host
     unsigned long int value = 0;
     f.read((char *)&value, ENCODED_WORD_LENGTH);
+    if(debug) cout << "Raw read int: 0x" << hex << value;
     value = be64toh(value);
     // Now shift the MSB-first value to restore the 36bit int
     value >>= 8*(sizeof(unsigned long int)-ENCODED_WORD_LENGTH);
+    if(debug) cout << ", formatted int: 0x" << hex << value << endl;
     return value;
 }
 
-double read_float(ifstream &f) {
+double read_float(ifstream &f, bool debug=false) {
     // Read a LSB-first float of 6 Bytes and return the IEEE-754 representation
     unsigned long int value = 0;
     f.read((char *)&value, ENCODED_WORD_LENGTH);
+    if(debug) cout << "Raw read float: 0x" << hex << value;
     value = be64toh(value);
-    // Now shift the MSB-first value to restore the 36bit int
-    //value >>= 8*(sizeof(unsigned long int)-ENCODED_WORD_LENGTH);
+    // Now shift the MSB-first value to restore the 36bit float
+    value >>= 8*(sizeof(unsigned long int)-ENCODED_WORD_LENGTH);
+    if(debug) cout << ", formatted float: 0x" << hex << value << endl;
     return 0;
 }
 
@@ -67,11 +71,12 @@ void read_binary(ifstream &f)
         cout << "At 0x" << hex << f.tellg() << ":" << endl;
 
         for(int i=0; i<32 && !f.eof(); ++i) {
-            float_val = read_float(f);
+            cout << "Trajectory parameter " << dec << i+1 << " ";
+            float_val = read_float(f, true);
             if(i==0) {
                 cout << "Record 1, GMT: " << float_val << endl;
             }
-            cout << "Trajectory parameter " << dec << i+1 << ": " << float_val << endl;
+            //cout << "Trajectory parameter " << dec << i+1 << ": " << float_val << endl;
         }
 
         //**** RECORD 2: 13 words, x-ray and gamma-ray common data, all ints except words 2 3 and 13 (floats)
@@ -99,9 +104,8 @@ void read_binary(ifstream &f)
             }
             else {  // The rest is ints
                 int_val = read_int(f);
-                cout << "Record 3 parameter " << dec << i+1 << ": " << int_val << endl;
+                //cout << "Record 3 parameter " << dec << i+1 << ": " << int_val << endl;
             }
-
         }
 
         //**** RECORD 4: 513 words, GMT followed by gamma-ray counts, all integers
