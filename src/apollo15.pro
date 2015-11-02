@@ -24,5 +24,5 @@ LIBS += ../heasoft-6.17/x86_64-unknown-linux-gnu-libc2.5/lib/libfitstcl.so
 LIBS += ../heasoft-6.17/x86_64-unknown-linux-gnu-libc2.5/lib/libtcl8.5.so
 
 # Input
-HEADERS += apollo15.hpp jpl_int.h jpleph.h
-SOURCES += apollo15.cc jpleph.cc
+#HEADERS += apollo15.hpp jpl_int.h jpleph.h
+SOURCES += apollo15.cc

@@ -19,10 +19,6 @@
 #include <utils/src/STime.h>
 #include "DalRegister.h"
 
-/* other includes */
-#include "apollo15.hpp"
-#include "jpleph.h"
-
 using namespace Info;
 using namespace std;
 

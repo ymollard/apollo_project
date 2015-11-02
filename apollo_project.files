@@ -1877,10 +1877,4 @@ ctadev/include/DataSetReaderWriter.h
 ctadev/include/DataSubspace.h
 ctadev/include/machine_specific_types.h
 src/apollo15.cc
-src/apollo15.hpp
-src/jpl_int.h
-src/jpleph.cc
-src/jpleph.h
-src/remove_blocks.c
 src/apollo15.pro
-src/remove_blocks.pro
