@@ -47,7 +47,7 @@ double MainframeConverter::to_float_ibm_7044(u_int64_t value, bool debug) {
     // The value of the number N is N = F x 2^(E-128) (Single precision), or N = F x 2^(E-1024) (double precision) where F is a binary fraction such that 0 <= |F| <1
 
     double fraction = 0, abs;
-    unsigned int exponent = (value >> 27) & 0xFF;
+    int exponent = (value >> 27) & 0xFF;
 
     for(int i=0; i<27; ++i) {
         if(((value & 0x7FFFFFF) >> i) & 1) {
@@ -78,7 +78,7 @@ double MainframeConverter::to_float_ibm_360(u_int32_t value, bool debug) {
     // The exponent is to the base 16 (not 2), and has a bias of 64.
 
     double fraction = 0, abs;
-    unsigned int exponent = (value >> 24) & 0x7F;
+    int exponent = (value >> 24) & 0x7F;
 
     for(int i=0; i<24; ++i) {
         if(((value & 0x7FFFFFF) >> i) & 1) {
@@ -88,7 +88,7 @@ double MainframeConverter::to_float_ibm_360(u_int32_t value, bool debug) {
     }
     abs = fraction*pow(16, exponent-64);
     if(debug) std::cout << std::fixed << fraction << "*16^(" << exponent << "-64) = "<< abs << std::endl;
-    return ((value >> 35) & 0x1)? -abs:abs;
+    return ((value >> 31) & 0x1)? -abs:abs;
 }
 
 unsigned int MainframeConverter::read_int_ibm_360(std::ifstream &f, bool debug) {
