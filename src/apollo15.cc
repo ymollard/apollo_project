@@ -25,21 +25,21 @@ using namespace std;
 #define TRIM 			0 /* Bytes to remove to reach the first record in the file */
 #define ENCODED_WORD_LENGTH     6 /* Length in Bytes of a word as encoded in the file, int or float */
 
-unsigned long int to_8bits(unsigned long int input) {
+u_int64_t to_8bits(u_int64_t input) {
     // Converts a 6bit padded long int (e.g. XXXXXX00XXXXXX00XXXXXXX) into host long int (XXXXXXXXXXXXXXXXXXX)
     return (input & 0x3F) | ((input & 0x3F00) >> 2)  | ((input & 0x3F0000) >> 4) |
                           ((input & 0x3F000000) >> 6)  | ((input & 0x3F00000000) >> 8) |
                           ((input & 0x3F0000000000) >> 10);
 }
 
-unsigned long int read_int(ifstream &f, bool debug=false) {
+u_int64_t read_int(ifstream &f, bool debug=false) {
     // Read a LSB-first int of 6 Bytes and return the corresponding encoding for the host
-    unsigned long int value = 0;
+    u_int64_t value = 0;
     f.read((char *)&value, ENCODED_WORD_LENGTH);
     if(debug) cout << "Raw read int: 0x" << hex << value;
     value = be64toh(value);
     // Now shift the MSB-first value to restore the 36bit int
-    value >>= 8*(sizeof(unsigned long int)-ENCODED_WORD_LENGTH);
+    value >>= 8*(sizeof(u_int64_t)-ENCODED_WORD_LENGTH);
     value = to_8bits(value);
     if(debug) cout << ", formatted int: 0x" << hex << value << endl;
     return value;
@@ -47,12 +47,12 @@ unsigned long int read_int(ifstream &f, bool debug=false) {
 
 double read_float(ifstream &f, bool debug=false) {
     // Read a LSB-first float of 6 Bytes and return the IEEE-754 representation
-    unsigned long int value = 0;
+    u_int64_t value = 0;
     f.read((char *)&value, ENCODED_WORD_LENGTH);
     if(debug) cout << "Raw read float: 0x" << hex << value;
     value = be64toh(value);
     // Now shift the MSB-first value to restore the 36bit float
-    value >>= 8*(sizeof(unsigned long int)-ENCODED_WORD_LENGTH);
+    value >>= 8*(sizeof(u_int64_t)-ENCODED_WORD_LENGTH);
     value = to_8bits(value);
     if(debug) cout << ", formatted float: 0x" << hex << value << endl;
 
@@ -78,7 +78,7 @@ double read_float(ifstream &f, bool debug=false) {
 
 void read_binary(ifstream &f, ofstream &csv)
 {
-    unsigned long int int_val;
+    u_int64_t int_val;
     double float_val;
 
     f.ignore(TRIM);
@@ -149,9 +149,6 @@ void read_binary(ifstream &f, ofstream &csv)
 }
 
 int main(int argc, char **argv) {
-    assert(sizeof(unsigned long int)>ENCODED_WORD_LENGTH); // Only 64 bit machines may handle enough space in only one value
-    assert(sizeof(float)==4);
-
     errHandler.name(argv[0]);
 
     openParameters("apollo15");
