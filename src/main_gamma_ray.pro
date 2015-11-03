@@ -1,5 +1,5 @@
 TEMPLATE = app
-TARGET = apollo15
+TARGET = main_gamma_ray
 INCLUDEPATH += .
 INCLUDEPATH += ../ctadev/include/
 INCLUDEPATH += ../ctadev/include/param/src
@@ -25,4 +25,4 @@ LIBS += ../heasoft-6.17/x86_64-unknown-linux-gnu-libc2.5/lib/libtcl8.5.so
 
 # Input
 HEADERS += mainframe_converter.h
-SOURCES += apollo15.cc mainframe_converter.cpp
+SOURCES += main_gamma_ray.cpp mainframe_converter.cpp

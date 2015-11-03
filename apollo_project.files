@@ -1876,7 +1876,7 @@ ctadev/include/DataFilter.h
 ctadev/include/DataSetReaderWriter.h
 ctadev/include/DataSubspace.h
 ctadev/include/machine_specific_types.h
-src/apollo15.cc
-src/apollo15.pro
+src/main_gamma_ray.cpp
+src/main_gamma_ray.pro
 src/mainframe_converter.h
 src/mainframe_converter.cpp
