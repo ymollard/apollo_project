@@ -31,6 +31,8 @@ class MainframeConverter {
         static double to_float_ibm_360(u_int32_t value, bool debug);
         static unsigned int read_int_ibm_360(std::ifstream &f, bool debug=false);
 
+        /****** Other ******/
+        u_int16_t read_short_16b(std::ifstream &f);
 };
 
 #endif // MAINFRAME_CONVERTER_H

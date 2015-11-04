@@ -94,5 +94,11 @@ double MainframeConverter::to_float_ibm_360(u_int32_t value, bool debug) {
 unsigned int MainframeConverter::read_int_ibm_360(std::ifstream &f, bool debug) {
     u_int32_t value = 0;
     f.read((char *)&value, ENCODED_WORD_LENGTH_IBM_360);
-    return value;
+    return be32toh(value);
+}
+
+u_int16_t MainframeConverter::read_short_16b(std::ifstream &f) {
+    u_int16_t value = 0;
+    f.read((char *)&value, 2);
+    return be16toh(value);
 }
