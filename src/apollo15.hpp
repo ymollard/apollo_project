@@ -48,7 +48,9 @@ struct sample {
 	int validity;
 };
 
-float read_apollo(unsigned int value);
+float read_apollo(unsigned int value, bool debug=false);
+float read_apollo_naive(unsigned int value);
+
 DataSet *write_fits(string filename, bool calib);
 void read_binary(ifstream &f, bool calib, bool sumcontrol, unsigned int observation);
 

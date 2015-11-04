@@ -38,8 +38,33 @@ using namespace std;
 #define CHECK_END() if(feof(f)) { cout << "File ended" << endl; f.close(); dataSetServer->close(set); exit(EXIT_SUCCESS); }
 #define ASSERT(x) if(!(x)) { cout << "At 0x" << hex << f.tellg() << dec << " assert failed: " << STR_VALUE(x) << endl; f.close(); exit(EXIT_SUCCESS); } // Allows to close all files properly when a new spectra is not complete (eof)
 
-float read_apollo(unsigned int value) {
-	/* Convert a 32-bits float value coming from the file into an IEEE-754 standard representation */
+float read_apollo(unsigned int value, bool debug) {
+        /* Convert a 32-bits float value coming from IBM 360 into an IEEE-754 standard representation */
+        if(debug) std::cout << "Raw read float: 0x" << std::hex << value;
+        //value = be32toh(value);
+        if(debug) std::cout << ", formatted float: 0x" << std::hex << value << std::endl;
+
+        // Now convert the IBM 360/37/3081 float (32-bit) into host float
+        // Hint: From http://nssdc.gsfc.nasa.gov/nssdc/formats/IBM_32-Bit.html
+        // IBM floating point numbers are represented by one bit for the sign (S), 7 bits for the exponent, and 24 bits for the fraction.
+        // The exponent is to the base 16 (not 2), and has a bias of 64.
+
+        float fraction = 0, abs;
+        int exponent = (value >> 24) & 0x7F;
+
+        for(int i=0; i<24; ++i) {
+            if(((value & 0x7FFFFFF) >> i) & 1) {
+                fraction += pow(2, i-24.0);
+                if(debug) std::cout << "Adding 2^" << std::dec << i-24 << std::endl;
+                }
+        }
+        abs = fraction*pow(16, exponent-64);
+        if(debug) std::cout << std::fixed << fraction << "*16^(" << exponent << "-64) = "<< abs << std::endl;
+        return ((value >> 31) & 0x1)? -abs:abs;
+    }
+
+float read_apollo_naive(unsigned int value) {
+    /* Convert a 32-bits float value coming from the file into an IEEE-754 standard representation */
     unsigned int numchar, i, filter;
     float trvalue;
     numchar = (value & 0x0F000000) >> 24;
@@ -66,7 +91,6 @@ float read_apollo(unsigned int value) {
 
     return ((value & 0xF0000000)==0xC0000000)? -trvalue-ceiling : trvalue+ceiling;
 }
-
 
 DataSet *write_fits(string filename, bool calib, int observation)
 {
@@ -613,7 +637,7 @@ void read_binary(ifstream &f, bool calib, bool sumcontrol, unsigned int observat
 
     unsigned int i, j, k, value, nspect, value2;
     int nextcalib = 0; /* Used to remove the next value after a calibration procedure, often wrong */
-    float trvalue, sum; /* translated value */
+    float trvalue, sum, trvalue_naive; /* translated value */
     unsigned int xray[220]; /* The raw x-ray table in big-endian */
     list<struct sample>::reverse_iterator it; /* reverse iterator to change the validity flag in case of sum check failure */
 
@@ -664,6 +688,7 @@ void read_binary(ifstream &f, bool calib, bool sumcontrol, unsigned int observat
 				f.read((char *)&value, 4); // GET
 
 				trvalue = read_apollo(ntohl(value));
+
 				//cout << "spectra " << i+1 << " at 0x" << hex << f.tellg() << dec << " GET " << trvalue << endl;
 				f.read((char *)&xray, 220*4);
         	}
