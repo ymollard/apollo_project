@@ -1882,3 +1882,4 @@ src/mainframe_converter.h
 src/mainframe_converter.cpp
 src/main_mass.pro
 src/main_mass.cpp
+src/mainframe_converter.tcc

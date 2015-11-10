@@ -24,5 +24,5 @@ LIBS += ../heasoft-6.17/x86_64-unknown-linux-gnu-libc2.5/lib/libfitstcl.so
 LIBS += ../heasoft-6.17/x86_64-unknown-linux-gnu-libc2.5/lib/libtcl8.5.so
 
 # Input
-HEADERS += mainframe_converter.h
+HEADERS += mainframe_converter.h mainframe_converter.tcc
 SOURCES += main_gamma_ray.cpp mainframe_converter.cpp

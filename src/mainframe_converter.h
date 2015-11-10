@@ -5,9 +5,14 @@
 #include <math.h>
 #include <iostream>
 #include <fstream>
+#include <typeinfo>
 
 #define ENCODED_WORD_LENGTH_IBM_7044     6 /* Length in Bytes of a word as encoded in the file, int or float */
 #define ENCODED_WORD_LENGTH_IBM_360      4 /* Length in Bytes of a word as encoded in the file, int or float */
+
+#define CONSISTENCY_PASSED 0
+#define CONSISTENCY_FAILED -1
+#define CONSISTENCY_EOF -2
 
 class MainframeConverter {
     public:
@@ -25,6 +30,9 @@ class MainframeConverter {
 
         static double to_float_ibm_7044(u_int64_t value, bool debug=false);
 
+        template <typename word_ibm_7044>
+        int check_consistency_and_align(std::ifstream &f, word_ibm_7044 value, word_ibm_7044 min_acceptable_value, word_ibm_7044 max_acceptable_value, off_t max_offset=0, bool debug=false);  // Template implementation in .tcc file
+
 
         /****** IBM 360 (32-bit words) ******/
         static double read_float_ibm_360(std::ifstream &f, bool debug=false);
@@ -34,5 +42,7 @@ class MainframeConverter {
         /****** Other ******/
         u_int16_t read_short_16b(std::ifstream &f);
 };
+
+#include "mainframe_converter.tcc" // In-header implementation of templates
 
 #endif // MAINFRAME_CONVERTER_H
