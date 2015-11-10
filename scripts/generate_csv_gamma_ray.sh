@@ -6,7 +6,7 @@ cd ../src
 failures=""
 for file in ../data/*.DAT;
 do
-    ./apollo15 inputfile=$file
+    ./main_gamma_ray inputfile=$file
     if [ $? != 0 ];
     then
         failures="$failures $file"
