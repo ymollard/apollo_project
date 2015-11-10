@@ -31,7 +31,7 @@ class MainframeConverter {
         static double to_float_ibm_7044(u_int64_t value, bool debug=false);
 
         template <typename word_ibm_7044>
-        int check_consistency_and_align(std::ifstream &f, word_ibm_7044 value, word_ibm_7044 min_acceptable_value, word_ibm_7044 max_acceptable_value, off_t max_offset=0, bool debug=false);  // Template implementation in .tcc file
+        int check_consistency_and_align(std::ifstream &f, word_ibm_7044 value, word_ibm_7044 min_acceptable_value, word_ibm_7044 max_acceptable_value, off_t offset_to_new_record=0, off_t max_offset=0, bool debug=false);  // Template implementation in .tcc file
 
 
         /****** IBM 360 (32-bit words) ******/
