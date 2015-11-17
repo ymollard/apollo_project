@@ -1,4 +1,4 @@
-/*
+ /*
  * apollo15.cc
  *
  *  Created on: Nov 3, 2015
@@ -71,6 +71,7 @@ class Apollo15Mass: public MainframeConverter {
 
                 short record_2_length = read_short_16b(this->input_binary);
                 assert(record_2_length==read_short_16b(this->input_binary));
+
                 cout << "At 0x" << hex << this->input_binary.tellg() << " record 2 of size " << dec << record_2_length <<  endl;
 
                 for(int i=0; i<700 && !this->input_binary.eof(); ++i) {
@@ -95,12 +96,24 @@ class Apollo15Mass: public MainframeConverter {
 
                 short record_4_length = read_short_16b(this->input_binary);
                 assert(record_4_length==read_short_16b(this->input_binary));
+
+                u_int16_t value = read_short_16b(this->input_binary);
+                cout << "Eleminating 0x" << hex << value << endl;
+
+                int_val = read_int_ibm_360(this->input_binary);
+                cout << "Eleminating 0x" << int_val << value << endl;
+
                 cout << "At 0x" << hex << this->input_binary.tellg() << " record 4 of size " << dec << record_4_length <<  endl;
 
                 for(int i=0; i<228 && !this->input_binary.eof(); ++i) {
-                    int_val = read_int_ibm_360(this->input_binary);
-
-                    if(this->output_csv.is_open()) this->output_csv << hex << int_val << ";";
+                    if(i==0 || i==1 || i>18 && i<212) {
+                        int_val = read_int_ibm_360(this->input_binary);
+                        if(this->output_csv.is_open()) this->output_csv << dec << fixed << int_val << ";";
+                    }
+                    else {
+                        float_val = read_float_ibm_360(this->input_binary);
+                        if(this->output_csv.is_open()) this->output_csv << dec << fixed << float_val << ";";
+                    }
                 }
 
                 goto_next_record(this->input_binary);
