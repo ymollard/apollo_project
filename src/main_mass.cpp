@@ -55,8 +55,20 @@ class Apollo15Mass: public MainframeConverter {
                 }
                 previous_padding = padding;
                 ++num_padding_bytes;
+                cout << "Eleminating 0x" << padding << endl;
             }
             return false;
+        }
+
+        void open_and_check_record(ifstream &f, bool debug=true) {
+            short record_length = read_short_16b(f);
+            assert(record_length==read_short_16b(f));
+
+            u_int16_t value = read_short_16b(f);
+            if(debug) cout << "Eleminating 0x" << hex << value << endl;
+
+            u_int32_t int_val = read_int_ibm_360(f);
+            if(debug) cout << "Eleminating 0x" << int_val << endl;
         }
 
         void read_binary()
@@ -69,44 +81,34 @@ class Apollo15Mass: public MainframeConverter {
 
                 //**** RECORD 1 (228 words) is in fact RECORD 4
 
-                short record_2_length = read_short_16b(this->input_binary);
-                assert(record_2_length==read_short_16b(this->input_binary));
+                open_and_check_record(this->input_binary, true);
 
-                cout << "At 0x" << hex << this->input_binary.tellg() << " record 2 of size " << dec << record_2_length <<  endl;
+                cout << "At 0x" << hex << this->input_binary.tellg() << " record 2" <<  endl;
 
                 for(int i=0; i<700 && !this->input_binary.eof(); ++i) {
-                    float_val = read_float_ibm_360(this->input_binary);
+                    int_val = read_int_ibm_360(this->input_binary);
 
-                    //if(this->output_csv.is_open()) this->output_csv << fixed << float_val << ";";
+                    //if(this->output_csv.is_open()) this->output_csv << fixed << int_val << ";";
                 }
 
                 goto_next_record(this->input_binary);
+                open_and_check_record(this->input_binary, true);
 
-                short record_3_length = read_short_16b(this->input_binary);
-                assert(record_3_length==read_short_16b(this->input_binary));
-                cout << "At 0x" << hex << this->input_binary.tellg() << " record 3 of size " << dec << record_3_length <<  endl;
+                cout << "At 0x" << hex << this->input_binary.tellg() << " record 3" <<  endl;
 
                 for(int i=0; i<616 && !this->input_binary.eof(); ++i) {
-                    float_val = read_float_ibm_360(this->input_binary);
+                    int_val = read_int_ibm_360(this->input_binary);
 
-                    //if(this->output_csv.is_open()) this->output_csv << fixed << float_val << ";";
+                    //if(this->output_csv.is_open()) this->output_csv << fixed << int_val << ";";
                 }
 
                 goto_next_record(this->input_binary);
+                open_and_check_record(this->input_binary, true);
 
-                short record_4_length = read_short_16b(this->input_binary);
-                assert(record_4_length==read_short_16b(this->input_binary));
-
-                u_int16_t value = read_short_16b(this->input_binary);
-                cout << "Eleminating 0x" << hex << value << endl;
-
-                int_val = read_int_ibm_360(this->input_binary);
-                cout << "Eleminating 0x" << int_val << value << endl;
-
-                cout << "At 0x" << hex << this->input_binary.tellg() << " record 4 of size " << dec << record_4_length <<  endl;
+                cout << "At 0x" << hex << this->input_binary.tellg() << " record 4" <<  endl;
 
                 for(int i=0; i<228 && !this->input_binary.eof(); ++i) {
-                    if(i==0 || i==1 || i>18 && i<212) {
+                    if(i==0 || i==1 || i>18 && i<213) {
                         int_val = read_int_ibm_360(this->input_binary);
                         if(this->output_csv.is_open()) this->output_csv << dec << fixed << int_val << ";";
                     }
