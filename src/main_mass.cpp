@@ -42,40 +42,22 @@ class Apollo15Mass: public MainframeConverter {
             if(this->input_binary.is_open()) this->input_binary.close();
         }
 
-        bool goto_next_record(ifstream &f, bool debug=true) {
-            int num_padding_bytes = 0;
-            short previous_padding=0;
-
-            while(!f.eof()) {
-                short padding = read_short_16b(f);
-                if(padding==previous_padding && padding!=0) {
-                    cerr << dec << num_padding_bytes << " padding Bytes ignored until 0x" << hex << f.tellg() << endl;
-                    f.seekg(-4, ios_base::cur);
-                    //cerr << endl;
-                    return true;
-                }
-                previous_padding = padding;
-                ++num_padding_bytes;
-                //cerr << hex << padding;
-            }
-            return false;
-        }
-
         int get_record_type(ifstream &f) {
             short record_length = read_short_16b(f);
-            assert(record_length==read_short_16b(f));
+            short record_length_2 = read_short_16b(f);
+            assert(record_length==record_length_2);
+
+            u_int32_t record_type = read_int_ibm_360(f);
 
             u_int16_t value = read_short_16b(f);
             assert(value==0);
 
-            u_int32_t record_type = read_int_ibm_360(f);
-
             switch(record_type) {
-            case 0xafc0000:
+            case 0xafc:
                 return 2;
-            case 0x9b80000:
+            case 0x9b8:
                 return 3;
-            case 0x3ac0000:
+            case 0x3ac:
                 return 4;
             default:
                 return 0;
@@ -90,6 +72,7 @@ class Apollo15Mass: public MainframeConverter {
 
                 //if(this->output_csv.is_open()) this->output_csv << fixed << int_val << ";";
             }
+            this->input_binary.ignore(8);
         }
 
         void read_record_3() {
@@ -100,6 +83,7 @@ class Apollo15Mass: public MainframeConverter {
 
                 //if(this->output_csv.is_open()) this->output_csv << fixed << int_val << ";";
             }
+            this->input_binary.ignore(20);
         }
 
         void read_record_4() {
@@ -115,6 +99,7 @@ class Apollo15Mass: public MainframeConverter {
                     if(this->output_csv.is_open()) this->output_csv << dec << fixed << float_val << ";";
                 }
             }
+            this->input_binary.ignore(24);
         }
 
         void read_binary()
@@ -122,7 +107,6 @@ class Apollo15Mass: public MainframeConverter {
             this->input_binary.ignore(TRIM);
             while(!this->input_binary.eof()) {
 
-                goto_next_record(this->input_binary);
                 int record_id = get_record_type(this->input_binary);
                 switch(record_id) {
                 case 2:
