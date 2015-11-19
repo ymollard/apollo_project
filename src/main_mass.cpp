@@ -29,6 +29,7 @@ class Apollo15Mass: public MainframeConverter {
         string input_file;
         ifstream input_binary;
         ofstream output_csv;
+        int apollo_num; // 15 or 16
 
     public:
         Apollo15Mass(string input_file, bool output_csv=false) {
@@ -45,7 +46,8 @@ class Apollo15Mass: public MainframeConverter {
         int get_record_type(ifstream &f) {
             short record_length = read_short_16b(f);
             short record_length_2 = read_short_16b(f);
-            assert(record_length==record_length_2);
+            apollo_num = record_length==record_length_2? 15: 16;  /* Dirty trick to detect that before reading record 4, on apollo 16
+                                                                    * data record_length==record_length_2+1 */
 
             u_int32_t record_type = read_int_ibm_360(f);
 
@@ -60,6 +62,8 @@ class Apollo15Mass: public MainframeConverter {
             case 0x3ac:
                 return 4;
             default:
+                cout << "Unknown record " << hex << record_type << " at 0x" << hex << this->input_binary.tellg() << endl;
+
                 return 0;
             }
         }
@@ -72,7 +76,7 @@ class Apollo15Mass: public MainframeConverter {
 
                 //if(this->output_csv.is_open()) this->output_csv << fixed << int_val << ";";
             }
-            this->input_binary.ignore(8);
+            this->input_binary.ignore(apollo_num==15? 8:9);
         }
 
         void read_record_3() {
@@ -83,7 +87,7 @@ class Apollo15Mass: public MainframeConverter {
 
                 //if(this->output_csv.is_open()) this->output_csv << fixed << int_val << ";";
             }
-            this->input_binary.ignore(20);
+            this->input_binary.ignore(apollo_num==15? 20:21);
         }
 
         void read_record_4() {
@@ -99,7 +103,7 @@ class Apollo15Mass: public MainframeConverter {
                     if(this->output_csv.is_open()) this->output_csv << dec << fixed << float_val << ";";
                 }
             }
-            this->input_binary.ignore(24);
+            this->input_binary.ignore(apollo_num==15? 24:25);
         }
 
         void read_binary()
