@@ -5,7 +5,7 @@
  *      Author: ymollard
  */
 
-#include "mainframe_converter.h"
+#include "../mainframe_converter/mainframe_converter.h"
 
 /* system includes */
 #include <assert.h>

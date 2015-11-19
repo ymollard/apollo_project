@@ -1,12 +1,12 @@
 #!/bin/bash
 
 init=`pwd`
-cd ../src
+cd ../src/mass_spectrometer
 
 failures=""
 for file_id in `seq 14190 14196`;
 do
-    file="../data/DD0"$file_id"_F1.DAT"
+    file="../../data/DD0"$file_id"_F1.DAT"
     ./main_mass inputfile=$file
     if [ $? != 0 ];
     then

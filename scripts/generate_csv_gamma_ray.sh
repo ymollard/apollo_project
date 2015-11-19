@@ -1,11 +1,12 @@
 #!/bin/bash
 
 init=`pwd`
-cd ../src
+cd ../src/gamma_ray_spectrometer
 
 failures=""
-for file in ../data/*.DAT;
+for file_id in `seq 19684 19730`;
 do
+    file="../../data/DD0"$file_id"_F1.DAT"
     ./main_gamma_ray inputfile=$file
     if [ $? != 0 ];
     then
