@@ -1884,3 +1884,5 @@ src/mainframe_converter/mainframe_converter.tcc
 src/mass_spectrometer/main_mass.pro
 src/mass_spectrometer/main_mass.cpp
 
+src/x_ray_spectrometer/main_x_ray.pro
+src/x_ray_spectrometer/main_x_ray.cpp
