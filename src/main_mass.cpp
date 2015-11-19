@@ -96,7 +96,11 @@ class Apollo15Mass: public MainframeConverter {
             for(int i=0; i<228 && !this->input_binary.eof(); ++i) {
                 if(i==0 || i==1 || i>18 && i<213) {
                     u_int32_t int_val = read_int_ibm_360(this->input_binary);
-                    if(this->output_csv.is_open()) this->output_csv << dec << fixed << int_val << ";";
+                    if(this->output_csv.is_open())
+                        if(i==209)  // Special case for SYNC CODE
+                            this->output_csv << "0x" << hex << int_val << ";";
+                        else
+                            this->output_csv << dec << fixed << int_val << ";";
                 }
                 else {
                     double float_val = read_float_ibm_360(this->input_binary);
