@@ -30,9 +30,11 @@ class Apollo15Mass: public MainframeConverter {
         ifstream input_binary;
         ofstream output_csv;
         int apollo_num; // 15 or 16
+        bool only_ephemeris;
 
     public:
-        Apollo15Mass(string input_file, bool output_csv=false) {
+        Apollo15Mass(string input_file, bool output_csv=false, bool only_ephemeris=false) {
+            this->only_ephemeris = only_ephemeris;
             this->input_file = input_file;
             this->input_binary.open(input_file.c_str(), ios::in | ios::binary);
             if(output_csv) this->output_csv.open(input_file.append(".csv").c_str());
@@ -41,6 +43,66 @@ class Apollo15Mass: public MainframeConverter {
         ~Apollo15Mass() {
             if(this->output_csv.is_open()) this->output_csv.close();
             if(this->input_binary.is_open()) this->input_binary.close();
+        }
+
+        void print_csv_headers() {
+            // Row 1 = column ID
+            // Record 2
+            if(!only_ephemeris) for(int i=0; i<700; ++i) this->output_csv << fixed << i+1 << ";";
+
+            // Record 3
+            if(!only_ephemeris) for(int i=0; i<616; ++i) this->output_csv << fixed << i+1 << ";";
+
+            // Record 4
+            for(int i=0; i<228; ++i) this->output_csv << fixed << i+1 << ";";
+
+            this->output_csv << endl;
+
+            // Row 2 = column names
+            // Record 2
+            if(!only_ephemeris) {
+                for(int i=0; i<600; ++i) this->output_csv << "Low mass data" << ";";
+                for(int i=0; i<50; ++i) this->output_csv << "Low mass calibration" << ";";
+                for(int i=0; i<50; ++i) this->output_csv << "High mass calibration" << ";";
+            }
+
+            // Record 3
+            if(!only_ephemeris) {
+                for(int i=0; i<8; ++i) this->output_csv << "Sync flags" << ";";
+                for(int i=0; i<8; ++i) this->output_csv << "Sync bit" << ";";
+                for(int i=0; i<600; ++i) this->output_csv << "High mass data" << ";";
+            }
+
+            // Record 4
+            this->output_csv << "Apollo no;"
+                             << "Time;"
+                             << "a0;"
+                             << "a1;"
+                             << "b0;"
+                             << "b1;"
+                             << "rev;"
+                             << "sun hr;"
+                             << "long;"
+                             << "lat;"
+                             << "radius;"
+                             << "velocity;"
+                             << "altitude;"
+                             << "ss long;"
+                             << "ss lat;"
+                             << "sun a;"
+                             << "sun b;"
+                             << "vel alpha;"
+                             << "vel beta;";
+            for(int i=0; i<28; ++i) this->output_csv << "Low mass peak amplitude" << ";";
+            for(int i=0; i<28; ++i) this->output_csv << "Low mass peak flag" << ";";
+            for(int i=0; i<67; ++i) this->output_csv << "High mass peak amplitude" << ";";
+            for(int i=0; i<67; ++i) this->output_csv << "High mass peak flag" << ";";
+            this->output_csv << "Sync code (start/stop);"
+                             << "OK?;"
+                             << "Low mass background avg;"
+                             << "High mass background avg;";
+            for(int i=0; i<15; ++i) this->output_csv << "Housekeeping voltage monitors" << ";";
+            this->output_csv << endl;
         }
 
         int get_record_type(ifstream &f) {
@@ -63,7 +125,6 @@ class Apollo15Mass: public MainframeConverter {
                 return 4;
             default:
                 cout << "Unknown record " << hex << record_type << " at 0x" << hex << this->input_binary.tellg() << endl;
-
                 return 0;
             }
         }
@@ -74,7 +135,7 @@ class Apollo15Mass: public MainframeConverter {
             for(int i=0; i<700 && !this->input_binary.eof(); ++i) {
                 u_int32_t int_val = read_int_ibm_360(this->input_binary);
 
-                //if(this->output_csv.is_open()) this->output_csv << fixed << int_val << ";";
+                if(!only_ephemeris && this->output_csv.is_open()) this->output_csv << fixed << int_val << ";";
             }
             this->input_binary.ignore(apollo_num==15? 8:9);
         }
@@ -85,7 +146,7 @@ class Apollo15Mass: public MainframeConverter {
             for(int i=0; i<616 && !this->input_binary.eof(); ++i) {
                 u_int32_t int_val = read_int_ibm_360(this->input_binary);
 
-                //if(this->output_csv.is_open()) this->output_csv << fixed << int_val << ";";
+                if(!only_ephemeris && this->output_csv.is_open()) this->output_csv << fixed << int_val << ";";
             }
             this->input_binary.ignore(apollo_num==15? 20:21);
         }
@@ -113,6 +174,8 @@ class Apollo15Mass: public MainframeConverter {
         void read_binary()
         {
             this->input_binary.ignore(TRIM);
+            if(this->output_csv.is_open()) print_csv_headers();
+
             while(!this->input_binary.eof()) {
 
                 int record_id = get_record_type(this->input_binary);
@@ -155,6 +218,6 @@ int main(int argc, char **argv) {
     gParameters->checkMandatoryParameters();
 
     string input_file = stringParameter("inputfile"); /* input filename */
-    return Apollo15Mass(input_file, true).run();
+    return Apollo15Mass(input_file, true /* output CSV ? */, true /* only ephemeris ? */).run();
 }
 
