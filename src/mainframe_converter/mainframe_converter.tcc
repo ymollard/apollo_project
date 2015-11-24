@@ -3,11 +3,12 @@
 
 #include "mainframe_converter.h"
 
-template <typename word_ibm_7044>
-int MainframeConverter::check_consistency_and_align(std::ifstream &f, word_ibm_7044 value, word_ibm_7044 min_acceptable_value, word_ibm_7044 max_acceptable_value, off_t offset_to_new_record, off_t max_offset, bool debug) {
+template <typename word>
+int MainframeConverter::check_consistency_and_align(std::ifstream &f, int word_type, word value, word min_acceptable_value, word max_acceptable_value, off_t offset_to_new_record, off_t max_offset, bool debug) {
     /* Check the consistency of the file based on an acceptable range [min, max] for value.
      * In case value is outside this range, a maximum on max_offset will be skipped to align the file to the next record
      * max_offest should not be greater than the length of a record.
+     * word_type is the type of the checked value, one of the TYPE_XXX_XXX constant
      * Returns CONSISTENCY_PASSED if the file is consistent so far, CONSISTENCY_EOF if EOF has been reached, CONSISTENCY_FAILED if alignment failed, or the applicated offest>0
      * If alignment was needed and succeeded according to the given range, the file is ready to read a new value of the same magnitude than "value".
     */
@@ -16,14 +17,40 @@ int MainframeConverter::check_consistency_and_align(std::ifstream &f, word_ibm_7
         off_t offset=0;
         while(offset<max_offset && !f.eof()) {
             f.seekg(1, std::ios_base::cur);
-            word_ibm_7044 new_value = typeid(word_ibm_7044)==typeid(u_int64_t)? read_int_ibm_7044(f, debug): read_float_ibm_7044(f, debug);
-            if(debug) std::cout << "Testing value at 0x" << std::hex << f.tellg() << ": " << new_value << std::endl;
+            std::cout << "Testing value at 0x" << std::hex << f.tellg() << ": ";
+            word new_value;
+            int size;
+
+            switch (word_type) {
+            case TYPE_INT_IBM_360:
+                new_value = read_int_ibm_360(f, debug);
+                size = 4;
+                break;
+            case TYPE_FLOAT_IBM_360:
+                new_value = read_float_ibm_360(f, debug);
+                size = 4;
+                break;
+            case TYPE_INT_IBM_7044:
+                new_value = read_int_ibm_7044(f, debug);
+                size = 6;
+                break;
+            case TYPE_FLOAT_IBM_7044:
+                new_value = read_float_ibm_7044(f, debug);
+                size = 6;
+                break;
+            default:
+                return CONSISTENCY_FAILED;
+            }
+
+            std::cout << new_value << std::endl;
+
             if(!(new_value<min_acceptable_value || new_value>max_acceptable_value)) {
                 if(debug) std::cout << "Found new consistent value: " << std::fixed << new_value << " with an offset of " << std::dec << offset << std::endl;
-                f.seekg(offset_to_new_record-ENCODED_WORD_LENGTH_IBM_7044, std::ios_base::cur);  // Go to the new record from this inconsistent field
+                f.seekg(offset_to_new_record-size, std::ios_base::cur);  // Go to the new record from this inconsistent field
                 return offset;
             }
             ++offset;
+            f.seekg(-size, std::ios_base::cur);
         }
         if(f.eof())
             return CONSISTENCY_EOF; // No alignment needed when EOF has been reached

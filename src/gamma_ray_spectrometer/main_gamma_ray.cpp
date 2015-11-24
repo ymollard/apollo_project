@@ -84,8 +84,8 @@ class Apollo15GammaRay: public MainframeConverter {
                     float_val = read_float_ibm_7044(this->input_binary);
 
                     if(i==0) {
-                        int offset = check_consistency_and_align(this->input_binary, float_val, 18050000., 18900000.,
-                                                                 -2, this->spectra_length);
+                        int offset = check_consistency_and_align(this->input_binary, TYPE_FLOAT_IBM_7044, float_val,
+                                                                 18050000., 18900000., -2, this->spectra_length);
                         if(offset==CONSISTENCY_FAILED) {
                             cerr << "Consistency checking GMT record 1 failed permanently, abandoning..." << endl;
                             return false;

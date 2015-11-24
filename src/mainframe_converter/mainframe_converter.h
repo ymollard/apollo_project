@@ -14,6 +14,11 @@
 #define CONSISTENCY_FAILED -1
 #define CONSISTENCY_EOF -2
 
+#define TYPE_INT_IBM_7044 1
+#define TYPE_FLOAT_IBM_7044 2
+#define TYPE_INT_IBM_360 3
+#define TYPE_FLOAT_IBM_360 4
+
 class MainframeConverter {
     public:
         /****** IBM  IBM 7044/7090/7094 (36-bit words with padding every 6 bit) ******/
@@ -30,10 +35,6 @@ class MainframeConverter {
 
         static double to_float_ibm_7044(u_int64_t value, bool debug=false);
 
-        template <typename word_ibm_7044>
-        int check_consistency_and_align(std::ifstream &f, word_ibm_7044 value, word_ibm_7044 min_acceptable_value, word_ibm_7044 max_acceptable_value, off_t offset_to_new_record=0, off_t max_offset=0, bool debug=false);  // Template implementation in .tcc file
-
-
         /****** IBM 360 (32-bit words) ******/
         static double read_float_ibm_360(std::ifstream &f, bool debug=false);
         static double to_float_ibm_360(u_int32_t value, bool debug);
@@ -41,6 +42,11 @@ class MainframeConverter {
 
         /****** Other ******/
         u_int16_t read_short_16b(std::ifstream &f);
+        template <typename word>
+        int check_consistency_and_align(std::ifstream &f, int word_type, word value, word min_acceptable_value, word max_acceptable_value, off_t offset_to_new_record, off_t max_offset, bool debug=false);
+
+
+
 };
 
 #include "mainframe_converter.tcc" // In-header implementation of templates
