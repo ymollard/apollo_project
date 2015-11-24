@@ -17,7 +17,7 @@ int MainframeConverter::check_consistency_and_align(std::ifstream &f, int word_t
         off_t offset=0;
         while(offset<max_offset && !f.eof()) {
             f.seekg(1, std::ios_base::cur);
-            std::cout << "Testing value at 0x" << std::hex << f.tellg() << ": ";
+            if(debug) std::cout << "Testing value at 0x" << std::hex << f.tellg() << ": ";
             word new_value;
             int size;
 
@@ -42,7 +42,7 @@ int MainframeConverter::check_consistency_and_align(std::ifstream &f, int word_t
                 return CONSISTENCY_FAILED;
             }
 
-            std::cout << new_value << std::endl;
+            if(debug) std::cout << new_value << std::endl;
 
             if(!(new_value<min_acceptable_value || new_value>max_acceptable_value)) {
                 if(debug) std::cout << "Found new consistent value: " << std::fixed << new_value << " with an offset of " << std::dec << offset << std::endl;

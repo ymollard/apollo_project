@@ -12,6 +12,8 @@ u_int64_t MainframeConverter::read_int_ibm_7044(std::ifstream &f, bool debug) {
     // Read a LSB-first int of 6 Bytes and return the corresponding encoding for the host
     u_int64_t value = 0;
     f.read((char *)&value, ENCODED_WORD_LENGTH_IBM_7044);
+    this->eot |= value==0x90909090909;
+    this->eof |= value==0x121212121212;
     return to_int_ibm_7044(value, debug);
 }
 
@@ -29,6 +31,8 @@ double MainframeConverter::read_float_ibm_7044(std::ifstream &f, bool debug) {
     // Read a LSB-first float of 6 Bytes and return the IEEE-754 representation
     u_int64_t value = 0;
     f.read((char *)&value, ENCODED_WORD_LENGTH_IBM_7044);
+    this->eot |= value==0x90909090909;
+    this->eof |= value==0x121212121212;
     return to_float_ibm_7044(value, debug);
 }
 
@@ -101,4 +105,9 @@ u_int16_t MainframeConverter::read_short_16b(std::ifstream &f) {
     u_int16_t value = 0;
     f.read((char *)&value, 2);
     return be16toh(value);
+}
+
+MainframeConverter::MainframeConverter() {
+    this->eof = false;
+    this->eot = false;
 }

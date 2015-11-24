@@ -46,34 +46,13 @@ class Apollo15GammaRay: public MainframeConverter {
             if(this->input_binary.is_open()) this->input_binary.close();
         }
 
-        bool eof() { // Not sure whether this EOF is a standard, so let's keep it here
-            int eof_marker_length = 8;
-            int eof_index = 0;
-            u_int16_t int_val;
-            bool is_eof = true;
-
-            if(!this->input_binary.eof()) {
-                while(eof_index<eof_marker_length) {
-                    int_val = read_short_16b(this->input_binary);
-                    if(int_val!=0x0909) {
-                        is_eof = false;
-                        break;
-                    }
-                    ++eof_index;
-                }
-                this->input_binary.seekg(-(eof_index+1)*2, ios_base::cur);
-                return is_eof;
-            }
-            return true;
-        }
-
         bool read_binary()
         {
             u_int64_t int_val;
             double float_val;
 
             this->input_binary.ignore(TRIM);
-            while(!eof()) {
+            while(!this->input_binary.eof()) {
                 this->skip_spectra = false;
 
                 //**** RECORD 1: 32 words, spacecraft trajectory parameters, all floats
@@ -87,8 +66,14 @@ class Apollo15GammaRay: public MainframeConverter {
                         int offset = check_consistency_and_align(this->input_binary, TYPE_FLOAT_IBM_7044, float_val,
                                                                  18050000., 18900000., -2, this->spectra_length);
                         if(offset==CONSISTENCY_FAILED) {
-                            cerr << "Consistency checking GMT record 1 failed permanently, abandoning..." << endl;
-                            return false;
+                            if(this->eof||this->eot)
+                                return true;
+                            else
+                            {
+                                cerr << "Consistency checking GMT record 1 failed permanently, abandoning..." << endl;
+                                return false;
+                            }
+
                         }
                         else if(offset!=CONSISTENCY_PASSED) {
                             this->skip_spectra = true;
