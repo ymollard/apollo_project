@@ -55,8 +55,8 @@ make
 For numerous files, use the helper BASH scripts:
 ```
 cd apollo_project/scripts
-./retrieve_data_gamma_ray.sh # Download the data files from NASA's FTP in the data/ folder
-./generate_csv_gamma_ray.sh # Converts all gamma ray data files with multiple commands ./main_gamma_ray inputfile=...
+./retrieve_all_data.sh # Download the data files from NASA's FTP in the data/ folder with multiple calls to ./retrieve_generic.sh <url>
+./generate_csv_gamma_ray.sh # Converts all gamma ray data files with multiple calls to ./main_gamma_ray inputfile=<file>
 ```
 
 ## Documentation
