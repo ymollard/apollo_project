@@ -10,9 +10,15 @@ do
     ./main_gamma_ray inputfile=$file
     if [ $? != 0 ];
     then
-        failures="$failures $file"
+        failures="$failures""\n""$file"
         >&2 echo $file FAILED to convert
     fi
 done
-echo "Processing complete, errors:" $failures
+
+if [ "$failures" == "" ];
+then
+    echo "Processing complete without error!"
+else
+    >&2 echo -e "Processing complete, errors occured on the following files:" $failures
+fi
 cd $init
