@@ -1,7 +1,7 @@
 #ifndef MAINFRAME_CONVERTER_H
 #define MAINFRAME_CONVERTER_H
 #include <arpa/inet.h>
-#include <types.h>
+#include <sys/types.h>
 #include <math.h>
 #include <iostream>
 #include <fstream>
