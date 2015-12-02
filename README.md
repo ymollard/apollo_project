@@ -33,23 +33,28 @@ Currently old code to be refactorized.
 The following procedure gives clues about how to run again the conversion of original data in CSV and/or FITS, according to the implementation and the requested output in argument.
 
 ### Dependencies
-The C++ code relys on the SAS library and uses qmake. SAS needs to be initialized before running the conversion tools.
-SAS is needed to write FITS files, convert from/to julian days, as well as open command line parameters.
+The C++ code relys on the SAS library and uses qmake. SAS is needed to write FITS files, convert from/to julian days, as well as open command line parameters. A subset of SAS is provided in folder `ctadev_64` for 64bit machines.
 
-By default Heasoft and a subset of SAS are expected to be at the root of the repository (`src/../`) in, respectively, `heasoft-6.17` and `ctadev` folders. Editing `*.pro` files associated to each converter might be necessary to reach these libraries.
+SAS relies on HEASOFT that must be compiled and installed (`cd BUILD_DIR && ./configure && make && make install`). In case the library can't be installed, paths to libs can be tweaked in file `libs.pri`.
 
-See their specific documentation:
+Also make sure you have qt4 installed (package `qt4-dev`).
+
+See the specific documentation of the dependencies:
  * [Heasoft (NASA)](http://heasarc.gsfc.nasa.gov/lheasoft/) (General-Use FTOOLS is enouth)
- * [SAS (ESA)](http://xmm.esac.esa.int/sas/) (TODO: the light version should be online soon))
+ * [SAS (ESA)](http://xmm.esac.esa.int/sas/) (Light version ctadev_64 included)
 
 ### Compiling and running
+First of all, edit files `init.sh` and `libs.pri` to match your custom installation folder of HEASOFT. THe path to SAS (ctadev) must be fine since it's provided with the repository.
+
+Then compile and run the conversion as is, using each time `inputfile=<path/to_file.DAT>` for the input file:
 ```
 source init.sh  # Initializes SAS
 cd apollo_project/src/mass_spectrometer
-qmake -project main_mass.pro  # Generate the Makefile
+qmake # Generate the Makefile
 make
 ./main_mass inputfile=../data/DD014191_F1.DAT
 ```
+The default generates a CSV output alongside the original DAT file.
 
 ### Helper scripts
 For numerous files, use the helper BASH scripts:
