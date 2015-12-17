@@ -45,6 +45,10 @@ class MainframeConverter {
 
         /****** Other ******/
         u_int16_t read_short_16b(std::istream &f);
+
+        /****** Consistency checking ******/
+        template <typename word>
+        bool check_consistency(word value, word min_acceptable_value, word max_acceptable_value);
         template <typename word>
         int check_consistency_and_align(std::istream &f, int word_type, word value, word min_acceptable_value, word max_acceptable_value, off_t offset_to_new_record, off_t max_offset, bool debug=false);
 
