@@ -4,7 +4,7 @@
 #include "mainframe_converter.h"
 
 template <typename word>
-int MainframeConverter::check_consistency_and_align(std::ifstream &f, int word_type, word value, word min_acceptable_value, word max_acceptable_value, off_t offset_to_new_record, off_t max_offset, bool debug) {
+int MainframeConverter::check_consistency_and_align(std::istream &f, int word_type, word value, word min_acceptable_value, word max_acceptable_value, off_t offset_to_new_record, off_t max_offset, bool debug) {
     /* Check the consistency of the file based on an acceptable range [min, max] for value.
      * In case value is outside this range, a maximum on max_offset will be skipped to align the file to the next record
      * max_offest should not be greater than the length of a record.

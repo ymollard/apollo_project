@@ -28,25 +28,25 @@ class MainframeConverter {
         static u_int64_t to_8bits_ibm_7044(u_int64_t input);
         // Converts a 6bit padded long int (e.g. XXXXXX00XXXXXX00XXXXXXX) into host long int (XXXXXXXXXXXXXXXXXXX)
 
-        u_int64_t read_int_ibm_7044(std::ifstream &f, bool debug=false);
+        u_int64_t read_int_ibm_7044(std::istream &f, bool debug=false);
         // Read a LSB-first int of 6 Bytes and return the corresponding encoding for the host
 
         static u_int64_t to_int_ibm_7044(u_int64_t value, bool debug=false);
 
-        double read_float_ibm_7044(std::ifstream &f, bool debug=false);
+        double read_float_ibm_7044(std::istream &f, bool debug=false);
         // Read a LSB-first float of 6 Bytes and return the IEEE-754 representation
 
         static double to_float_ibm_7044(u_int64_t value, bool debug=false);
 
         /****** IBM 360 (32-bit words) ******/
-        static double read_float_ibm_360(std::ifstream &f, bool debug=false);
+        static double read_float_ibm_360(std::istream &f, bool debug=false);
         static double to_float_ibm_360(u_int32_t value, bool debug);
-        static unsigned int read_int_ibm_360(std::ifstream &f, bool debug=false);
+        static unsigned int read_int_ibm_360(std::istream &f, bool debug=false);
 
         /****** Other ******/
-        u_int16_t read_short_16b(std::ifstream &f);
+        u_int16_t read_short_16b(std::istream &f);
         template <typename word>
-        int check_consistency_and_align(std::ifstream &f, int word_type, word value, word min_acceptable_value, word max_acceptable_value, off_t offset_to_new_record, off_t max_offset, bool debug=false);
+        int check_consistency_and_align(std::istream &f, int word_type, word value, word min_acceptable_value, word max_acceptable_value, off_t offset_to_new_record, off_t max_offset, bool debug=false);
 
         MainframeConverter();
 };

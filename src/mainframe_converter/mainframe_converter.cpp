@@ -8,7 +8,7 @@ u_int64_t MainframeConverter::to_8bits_ibm_7044(u_int64_t input) {
                           ((input & 0x3F0000000000) >> 10);
 }
 
-u_int64_t MainframeConverter::read_int_ibm_7044(std::ifstream &f, bool debug) {
+u_int64_t MainframeConverter::read_int_ibm_7044(std::istream &f, bool debug) {
     // Read a LSB-first int of 6 Bytes and return the corresponding encoding for the host
     u_int64_t value = 0;
     f.read((char *)&value, ENCODED_WORD_LENGTH_IBM_7044);
@@ -27,7 +27,7 @@ u_int64_t MainframeConverter::to_int_ibm_7044(u_int64_t value, bool debug) {
     return value;
 }
 
-double MainframeConverter::read_float_ibm_7044(std::ifstream &f, bool debug) {
+double MainframeConverter::read_float_ibm_7044(std::istream &f, bool debug) {
     // Read a LSB-first float of 6 Bytes and return the IEEE-754 representation
     u_int64_t value = 0;
     f.read((char *)&value, ENCODED_WORD_LENGTH_IBM_7044);
@@ -64,7 +64,7 @@ double MainframeConverter::to_float_ibm_7044(u_int64_t value, bool debug) {
     return ((value >> 35) & 0x1)? -abs:abs;
 }
 
-double MainframeConverter::read_float_ibm_360(std::ifstream &f, bool debug) {
+double MainframeConverter::read_float_ibm_360(std::istream &f, bool debug) {
     u_int32_t value = 0;
     f.read((char *)&value, ENCODED_WORD_LENGTH_IBM_360);
     return to_float_ibm_360(value, debug);
@@ -95,13 +95,13 @@ double MainframeConverter::to_float_ibm_360(u_int32_t value, bool debug) {
     return ((value >> 31) & 0x1)? -abs:abs;
 }
 
-unsigned int MainframeConverter::read_int_ibm_360(std::ifstream &f, bool debug) {
+unsigned int MainframeConverter::read_int_ibm_360(std::istream &f, bool debug) {
     u_int32_t value = 0;
     f.read((char *)&value, ENCODED_WORD_LENGTH_IBM_360);
     return be32toh(value);
 }
 
-u_int16_t MainframeConverter::read_short_16b(std::ifstream &f) {
+u_int16_t MainframeConverter::read_short_16b(std::istream &f) {
     u_int16_t value = 0;
     f.read((char *)&value, 2);
     return be16toh(value);
